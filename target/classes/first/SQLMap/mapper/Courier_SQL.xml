@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.courier">
+    <sql id="search">
+        <if test="searchOption == 'courierName'">
+            AND   co.courierName LIKE CONCAT('%',#{search},'%')
+        </if>
+        <if test="searchOption == 'courierCode'">
+            AND   co.courierCode LIKE CONCAT('%',#{search},'%')
+        </if>
+    </sql>
+
+    <select id="getMaxNum" resultType="int">
+        SELECT  MAX(courierSeq) + 1
+        FROM    t_whizlab_courier
+    </select>
+
+    <select id="searchCourier" resultType="CourierVO">
+        SELECT  co.*, cn.centerName, cn.centerCode
+        FROM    t_whizlab_courier AS co
+            LEFT OUTER JOIN t_whizlab_center AS cn
+                ON  cn.centerBizCode = co.courierBizCode
+                AND co.courierCenter = cn.centerCode
+        WHERE   co.courierBizCode = #{courierBizCode}
+        AND     co.courierDel = 'N'
+        <include refid="search"/>
+    </select>
+
+    <select id="courierList" resultType="CourierVO">
+        SELECT  co.*, cn.centerName, cn.centerCode
+        FROM    t_whizlab_courier AS co
+            LEFT OUTER JOIN t_whizlab_center AS cn
+                ON  cn.centerBizCode = co.courierBizCode
+                AND co.courierCenter = cn.centerCode
+        WHERE   courierDel = 'N'
+        AND     courierBizCode = #{bizCode}
+        ORDER BY    courierSeq
+    </select>
+
+    <select id="courierView" resultType="CourierVO">
+        SELECT  cn.*, us.commonCodeName as usageCommon
+        FROM    t_whizlab_courier AS cn
+            LEFT OUTER JOIN t_whizlab_commoncode AS us
+                ON cn.courierUsage = us.commonCodeNumber
+        WHERE   cn.courierSeq = #{courierSeq}
+        AND     cn.courierDel = 'N'
+    </select>
+
+    <insert id="insertCourier">
+        INSERT INTO t_whizlab_courier (
+            courierBizCode      ,
+            courierCode         ,
+            courierCenter       ,
+            courierName         ,
+            courierPhone        ,
+            courierMobile       ,
+            courierWorkDistance ,
+            courierJoinDate     ,
+            courierPostCode     ,
+            courierAddress      ,
+            courierAddressDetail,
+            courierBelong       ,
+            courierContact      ,
+            courierManager      ,
+            courierCarOwner     ,
+            courierCarNumber    ,
+            courierCarModel     ,
+            courierCarModelYear ,
+            courierCarTonnage   ,
+            courierCarColor     ,
+            courierCarTemp      ,
+            courierUsage        ,
+            courierNote         ,
+            courierRegi         ,
+            courierEditor
+        ) VALUES (
+             #{courierBizCode      },
+             #{courierCode         },
+             #{courierCenter       },
+             #{courierName         },
+             #{courierPhone        },
+             #{courierMobile       },
+             #{courierWorkDistance },
+             #{courierJoinDate     },
+             #{courierPostCode     },
+             #{courierAddress      },
+             #{courierAddressDetail},
+             #{courierBelong       },
+             #{courierContact      },
+             #{courierManager      },
+             #{courierCarOwner     },
+             #{courierCarNumber    },
+             #{courierCarModel     },
+             #{courierCarModelYear },
+             #{courierCarTonnage   },
+             #{courierCarColor     },
+             #{courierCarTemp      },
+             #{courierUsage        },
+             #{courierNote         },
+             #{courierRegi         },
+             #{courierEditor       }
+        )
+    </insert>
+
+    <update id="updateCourier">
+        UPDATE  t_whizlab_courier
+        SET     courierBizCode          = #{courierBizCode},
+                courierCode             = #{courierCode},
+                courierCenter           = #{courierCenter},
+                courierName             = #{courierName},
+                courierPhone            = #{courierPhone},
+                courierMobile           = #{courierMobile},
+                courierWorkDistance     = #{courierWorkDistance},
+                courierJoinDate         = #{courierJoinDate},
+                courierPostCode         = #{courierPostCode},
+                courierAddress          = #{courierAddress},
+                courierAddressDetail    = #{courierAddressDetail},
+                courierBelong           = #{courierBelong},
+                courierContact          = #{courierContact},
+                courierManager          = #{courierManager},
+                courierCarOwner         = #{courierCarOwner},
+                courierCarNumber        = #{courierCarNumber},
+                courierCarModel         = #{courierCarModel},
+                courierCarModelYear     = #{courierCarModelYear},
+                courierCarTonnage       = #{courierCarTonnage},
+                courierCarColor         = #{courierCarColor},
+                courierCarTemp          = #{courierCarTemp},
+                courierUsage            = #{courierUsage},
+                courierNote             = #{courierNote},
+                courierEditor           = #{courierEditor}
+        WHERE   courierSeq              = #{courierSeq}
+    </update>
+
+    <update id="deleteCourier">
+        UPDATE  t_whizlab_courier
+        SET     courierDel      = 'Y',
+                courierEditor   = #{courierEditor}
+        WHERE   courierSeq      = #{courierSeq}
+    </update>
+
+    <select id="centerList" resultType="CenterVO">
+        SELECT  *
+        FROM    t_whizlab_center
+        WHERE   centerDel = 'N'
+        AND		centerBizCode = #{bizCode}
+    </select>
+</mapper>

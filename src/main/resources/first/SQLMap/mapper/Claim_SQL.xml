@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.cla">
+    <select id="claimList" resultType="ClaimVO">
+        SELECT  claSeq, claTitle, claReason, claImgPath, claContent, claRegi, DATE_FORMAT(claRegiDate, '%Y-%m-%d %H시%s분') AS claRegiDate, claStatus
+        FROM    t_whizlab_jsclaim
+        WHERE   claRegi = #{claCustomer}
+    </select>
+    <select id="getMaxClaSeq" resultType="int">
+        SELECT IFNULL(MAX(claSeq),0)+1
+        FROM   t_whizlab_jsclaim ;
+    </select>
+    <insert id="claimInsert">
+        INSERT INTO t_whizlab_jsclaim (claTitle,claReason,claImgPath,claImgName,claContent,claRegi,claRegiDate,claStatus)
+        VALUES (#{claTitle},#{claReason},#{claImgPath},#{claImgName},#{claContent},#{claRegi},DEFAULT,'N')
+    </insert>
+    <select id="getClaim" resultType="ClaimVO">
+        SELECT *
+        FROM   t_whizlab_jsclaim
+        WHERE  claSeq = #{claSeq};
+    </select>
+</mapper>

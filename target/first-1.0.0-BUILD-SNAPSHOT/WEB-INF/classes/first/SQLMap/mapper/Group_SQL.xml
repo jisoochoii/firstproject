@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.group">
+    <select id="groupList" resultType="GroupVO">
+        SELECT  *
+        FROM    t_whizlab_group
+    </select>
+
+    <select id="ajaxGroupList" resultType="UserGroupVO">
+        SELECT  ug.ugSeq, grp.groupSeq, grp.groupName, usr.userSeq, usr.userName
+        FROM    t_whizlab_usergroup AS ug
+            LEFT OUTER JOIN t_whizlab_group AS grp
+                ON ug.ugGroupSeq = grp.groupSeq
+            LEFT OUTER JOIN t_whizlab_user AS usr
+                ON ug.ugUserSeq = usr.userSeq
+        WHERE   ugGroupSeq = #{groupSeq}
+        AND     usr.userUsage ='Y'
+    </select>
+    
+    <select id="groupUserSearch" resultType="UserVO">
+        SELECT  usr.userSeq, usr.userID, usr.userName
+        FROM    t_whizlab_user usr
+            LEFT OUTER JOIN t_whizlab_usergroup ug
+                ON	usr.userSeq = ug.ugUserSeq
+        WHERE   userUsage = 'Y'
+        AND usr.userSeq NOT IN (SELECT ugUserSeq
+                                FROM t_whizlab_usergroup
+                                WHERE ugGroupSeq = #{groupSeq}
+                                )
+        AND     (usr.userID LIKE CONCAT('%',#{keyword},'%')
+        OR      usr.userName LIKE CONCAT('%',#{keyword},'%'))
+    </select>
+
+    <select id="ajaxUserList" resultType="UserGroupVO">
+        SELECT  ug.ugSeq, grp.groupSeq, grp.groupName, usr.userSeq, usr.userName
+        FROM    t_whizlab_usergroup AS ug
+            LEFT OUTER JOIN t_whizlab_group AS grp
+                ON ug.ugGroupSeq = grp.groupSeq
+            LEFT OUTER JOIN t_whizlab_user AS usr
+                ON ug.ugUserSeq = usr.userSeq
+        WHERE   ugUserSeq = #{userSeq}
+        AND     usr.userUsage ='Y'
+    </select>
+
+    <insert id="userGroupInsert">
+        INSERT INTO t_whizlab_usergroup (ugGroupSeq, ugUserSeq, ugRegi, ugEditor)
+        VALUES (#{ugGroupSeq}, #{ugUserSeq}, #{userSeq}, #{userSeq})
+    </insert>
+
+    <insert id="groupInsert">
+        INSERT INTO t_whizlab_group (groupName, groupUsage, groupRegi, groupEditor)
+        VALUES (#{groupName}, 'Y', #{groupRegi}, #{groupEditor})
+    </insert>
+
+    <delete id="groupUserDel">
+        DELETE FROM t_whizlab_usergroup
+        WHERE ugSeq = #{ugSeq}
+    </delete>
+</mapper>

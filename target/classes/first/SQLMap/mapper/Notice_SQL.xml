@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.notice">
+    <select id="noticeList" resultType="FreeboardVO">
+        SELECT  *
+        FROM    t_whizlab_notice
+    </select>
+
+    <select id="getNotice" resultType="NoticeVO">
+        SELECT  *
+        FROM    t_whizlab_notice
+        WHERE   fbSeq = #{fbSeq}
+    </select>
+</mapper>

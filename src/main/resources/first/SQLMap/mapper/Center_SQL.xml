@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.center">
+    <sql id="search">
+        <if test="searchOption == 'centerName'">
+            AND   cn.centerName LIKE CONCAT('%',#{search},'%')
+        </if>
+        <if test="searchOption == 'centerCode'">
+            AND   cn.centerCode LIKE CONCAT('%',#{search},'%')
+        </if>
+    </sql>
+
+    <select id="searchCenter" resultType="CenterVO">
+        SELECT  cn.*
+        FROM    t_whizlab_center AS cn
+        WHERE   cn.centerBizCode = #{centerBizCode}
+        AND     cn.centerDel = 'N'
+        <include refid="search"/>
+    </select>
+
+    <select id="centerList" resultType="CenterVO">
+        SELECT  *
+        FROM    t_whizlab_center
+        WHERE   centerDel = 'N'
+    </select>
+
+    <select id="centerView" resultType="CenterVO">
+        SELECT  cn.*, em.commonCodeName AS emailCommon, us.commonCodeName as usageCommon
+        FROM    t_whizlab_center AS cn
+            LEFT OUTER JOIN t_whizlab_commoncode AS em
+                ON cn.centerEmailDetail = em.commonCodeNumber
+            LEFT OUTER JOIN t_whizlab_commoncode AS us
+                ON cn.centerNoteUsage = us.commonCodeNumber
+        WHERE   cn.centerSeq = #{centerSeq}
+        AND     cn.centerDel = 'N'
+
+    </select>
+
+    <select id="getCenterMaxNum" resultType="int">
+        SELECT  cmnCommonTypeMaxNum
+        FROM    t_whizlab_common_max_num
+        WHERE   cmnType = 'STO'
+        AND     cmnMainCode = #{bizCode}
+    </select>
+
+    <insert id="insertCenter">
+        INSERT INTO t_whizlab_center (
+            centerCode              ,
+            centerName              ,
+            centerSName             ,
+            centerType              ,
+            centerTemp              ,
+            centerBizCode           ,
+            centerBizNumber         ,
+            centerBizCEO            ,
+            centerBizStatus         ,
+            centerBizItem           ,
+            centerPostCode          ,
+            centerAddress           ,
+            centerAddressDetail     ,
+            centerPhone             ,
+            centerMobile            ,
+            centerFAX               ,
+            centerEmail             ,
+            centerEmailDetail       ,
+            centerNote              ,
+            centerNoteUsage         ,
+            centerRegi              ,
+            centerEditor
+        ) VALUES (
+            #{centerCode              },
+            #{centerName              },
+            #{centerSName             },
+            #{centerType              },
+            #{centerTemp              },
+            #{centerBizCode           },
+            #{centerBizNumber         },
+            #{centerBizCEO            },
+            #{centerBizStatus         },
+            #{centerBizItem           },
+            #{centerPostCode          },
+            #{centerAddress           },
+            #{centerAddressDetail     },
+            #{centerPhone             },
+            #{centerMobile            },
+            #{centerFAX               },
+            #{centerEmail             },
+            #{centerEmailDetail       },
+            #{centerNote              },
+            #{centerNoteUsage         },
+            #{centerRegi              },
+            #{centerEditor            }
+        )
+    </insert>
+
+    <update id="updateCenter">
+        UPDATE  t_whizlab_center
+        SET     centerCode              = #{centerCode},
+                centerName              = #{centerName},
+                centerSName             = #{centerSName},
+                centerType              = #{centerType},
+                centerTemp              = #{centerTemp},
+                centerBizCode           = #{centerBizCode},
+                centerBizNumber         = #{centerBizNumber},
+                centerBizCEO            = #{centerBizCEO},
+                centerBizStatus         = #{centerBizStatus},
+                centerBizItem           = #{centerBizItem},
+                centerPostCode          = #{centerPostCode},
+                centerAddress           = #{centerAddress},
+                centerAddressDetail     = #{centerAddressDetail},
+                centerPhone             = #{centerPhone},
+                centerMobile            = #{centerMobile},
+                centerFAX               = #{centerFAX},
+                centerEmail             = #{centerEmail},
+                centerEmailDetail       = #{centerEmailDetail},
+                centerNote              = #{centerNote},
+                centerNoteUsage         = #{centerNoteUsage},
+                centerEditor            = #{centerEditor}
+        WHERE   centerSeq               = #{centerSeq}
+    </update>
+
+    <update id="deleteCenter">
+        UPDATE  t_whizlab_center
+        SET     centerDel = 'Y',
+                centerEditor = #{centerEditor}
+        WHERE   centerSeq = #{centerSeq}
+    </update>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.menu">
+    <select id="menuList" resultType="MenuVO">
+        SELECT  *
+        FROM    t_whizlab_menu
+        WHERE   menuDel = 'N'
+    </select>
+
+    <select id="menuUpperList" resultType="MenuVO">
+        SELECT  *
+        FROM    t_whizlab_menu
+        WHERE   menuUpperSeq = 0
+        AND     menuDel = 'N'
+    </select>
+
+    <insert id="insertMenu">
+        INSERT INTO t_whizlab_menu (menuUpperSeq, menuName, menuPath, menuOrderID, menuRegi, menuEditor)
+        VALUES (#{menuUpperSeq}, #{menuName}, #{menuPath}, #{menuOrderID}, #{menuRegi}, #{menuEditor})
+    </insert>
+</mapper>

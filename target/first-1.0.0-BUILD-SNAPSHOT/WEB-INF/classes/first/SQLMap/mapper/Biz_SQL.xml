@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.biz">
+    <sql id="search">
+        <if test="searchOption == 'bizName'">
+            AND   biz.bizName LIKE CONCAT('%',#{search},'%')
+        </if>
+        <if test="searchOption == 'bizCode'">
+            AND   biz.bizCode LIKE CONCAT('%',#{search},'%')
+        </if>
+    </sql>
+
+    <select id="bizList" resultType="BizVO">
+        SELECT  cat.commonCodeName AS catCommon, ban.commonCodeName AS bankCommon, em.commonCodeName AS emailCommon, M.*
+        FROM    t_whizlab_biz AS M
+             LEFT OUTER JOIN t_whizlab_commoncode AS cat
+                 ON M.bizCategory = cat.commonCodeNumber
+             LEFT OUTER JOIN t_whizlab_commoncode AS ban
+                 ON M.bizBankName = ban.commonCodeNumber
+             LEFT OUTER JOIN t_whizlab_commoncode AS em
+                 ON M.bizEmailDetail = em.commonCodeNumber
+        WHERE   M.bizDel = 'N'
+    </select>
+
+    <select id="bizViewList" resultType="BizVO">
+        SELECT  cat.commonCodeName AS catCommon, ban.commonCodeName AS bankCommon, em.commonCodeName AS emailCommon, M.*
+        FROM    t_whizlab_biz AS M
+             LEFT OUTER JOIN t_whizlab_commoncode AS cat
+                 ON M.bizCategory = cat.commonCodeNumber
+             LEFT OUTER JOIN t_whizlab_commoncode AS ban
+                 ON M.bizBankName = ban.commonCodeNumber
+             LEFT OUTER JOIN t_whizlab_commoncode AS em
+                 ON M.bizEmailDetail = em.commonCodeNumber
+        WHERE   M.bizDel = 'N'
+        AND     M.bizSeq = #{bizSeq}
+    </select>
+
+    <select id="getBizMaxNum" resultType="int">
+        SELECT  cmnCommonTypeMaxNum
+        FROM    t_whizlab_common_max_num
+        WHERE   cmnType = 'C'
+        AND     cmnMainCode = #{bizCategory}
+    </select>
+
+    <insert id="insertBiz">
+        INSERT INTO t_whizlab_biz (
+                   bizCategory          ,
+                   bizCode              ,
+                   bizName              ,
+                   bizNumber            ,
+                   bizRegiNumber        ,
+                   bizCEO               ,
+                   bizStatus            ,
+                   bizItem              ,
+                   bizPostCode          ,
+                   bizAddress           ,
+                   bizAddressDetail     ,
+                   bizBankName          ,
+                   bizBankNumber        ,
+                   bizNominee           ,
+                   bizPhone             ,
+                   bizMobile            ,
+                   bizFAX               ,
+                   bizEmail             ,
+                   bizEmailDetail       ,
+                   bizNote              ,
+                   bizNoteUsage         ,
+                   bizManager           ,
+                   bizManagerPhone      ,
+                   bizRegi              ,
+                   bizEditor            ,
+                   bizLinkageID         ,
+                   bizLinkageKey
+        ) VALUES (
+                   #{bizCategory     },
+                   #{bizCode         },
+                   #{bizName         },
+                   #{bizNumber       },
+                   #{bizRegiNumber   },
+                   #{bizCEO          },
+                   #{bizStatus       },
+                   #{bizItem         },
+                   #{bizPostCode     },
+                   #{bizAddress      },
+                   #{bizAddressDetail},
+                   #{bizBankName     },
+                   #{bizBankNumber   },
+                   #{bizNominee      },
+                   #{bizPhone        },
+                   #{bizMobile       },
+                   #{bizFAX          },
+                   #{bizEmail        },
+                   #{bizEmailDetail  },
+                   #{bizNote         },
+                   #{bizNoteUsage    },
+                   #{bizManager      },
+                   #{bizManagerPhone },
+                   #{bizRegi         },
+                   #{bizEditor       },
+                   #{bizLinkageID    },
+                   #{bizLinkageKey   }
+        )
+    </insert>
+
+    <update id="updateBiz">
+        UPDATE  t_whizlab_biz
+        SET     bizCategory         = #{bizCategory}        ,
+                bizCode             = #{bizCode}            ,
+                bizName             = #{bizName}            ,
+                bizNumber           = #{bizNumber}          ,
+                bizRegiNumber       = #{bizRegiNumber}      ,
+                bizCEO              = #{bizCEO}             ,
+                bizStatus           = #{bizStatus}          ,
+                bizItem             = #{bizItem}            ,
+                bizPostCode         = #{bizPostCode}        ,
+                bizAddress          = #{bizAddress}         ,
+                bizAddressDetail    = #{bizAddressDetail}   ,
+                bizBankName         = #{bizBankName}        ,
+                bizBankNumber       = #{bizBankNumber}      ,
+                bizNominee          = #{bizNominee}         ,
+                bizPhone            = #{bizPhone}           ,
+                bizMobile           = #{bizMobile}          ,
+                bizFAX              = #{bizFAX}             ,
+                bizEmail            = #{bizEmail}           ,
+                bizEmailDetail      = #{bizEmailDetail}     ,
+                bizNote             = #{bizNote}            ,
+                bizNoteUsage        = #{bizNoteUsage}       ,
+                bizManager          = #{bizManager}         ,
+                bizEditor           = #{bizEditor}          ,
+                bizManagerPhone     = #{bizManagerPhone}    ,
+                bizLinkageID        = #{bizLinkageID}       ,
+                bizLinkageKey       = #{bizLinkageKey}
+        WHERE   bizSeq              = #{bizSeq}
+    </update>
+
+    <update id="deleteBiz">
+        UPDATE  t_whizlab_biz
+        SET     bizDel = 'Y',
+                bizEditor = #{bizEditor}
+        WHERE   bizSeq = #{bizSeq}
+    </update>
+
+    <select id="brandList" resultType="BrandVO">
+        SELECT  regi.userName AS register, edit.userName AS edit, cat.commonCodeName AS category, bra.*
+        FROM    t_whizlab_brand AS bra
+            LEFT OUTER JOIN t_whizlab_biz AS biz
+                ON bra.brandBizCode = biz.bizCode
+            LEFT OUTER JOIN t_whizlab_commoncode AS cat
+                ON bra.brandCategory = cat.commonCodeNumber
+            LEFT OUTER JOIN t_whizlab_user AS regi
+                ON regi.userSeq = bra.brandRegi
+            LEFT OUTER JOIN t_whizlab_user AS edit
+                ON edit.userSeq = bra.brandEditor
+        WHERE   bra.brandBizCode = #{brandBizCode}
+          AND     bra.brandUsage = 'Y'
+    </select>
+
+    <insert id="saveBrand">
+        INSERT INTO t_whizlab_brand (
+             brandBizCode   ,
+             brandCategory  ,
+             brandCode      ,
+             brandName      ,
+             brandEndTime   ,
+             brandDeadline  ,
+             brandMinCost   ,
+             brandRegi      ,
+             brandEditor
+        ) VALUES (
+             #{brandBizCode   },
+             #{brandCategory  },
+             #{brandCode      },
+             #{brandName      },
+             #{brandEndTime   },
+             #{brandDeadline  },
+             #{brandMinCost   },
+             #{brandRegi      },
+             #{brandEditor    }
+        )
+    </insert>
+
+    <update id="updateBrand">
+        UPDATE  t_whizlab_brand
+        SET     brandBizCode   = #{brandBizCode}    ,
+                brandCategory  = #{brandCategory}   ,
+                brandCode      = #{brandCode}       ,
+                brandName      = #{brandName}       ,
+                brandEndTime   = #{brandEndTime}    ,
+                brandDeadline  = #{brandDeadline}   ,
+                brandMinCost   = #{brandMinCost}    ,
+                brandEditor    = #{brandEditor}
+        WHERE   brandSeq       = #{brandSeq}
+    </update>
+
+    <update id="deleteBrand">
+        UPDATE  t_whizlab_brand
+        SET     brandUsage     = 'N'      ,
+                brandEditor    = #{brandEditor}
+        WHERE   brandSeq       = #{brandSeq}
+    </update>
+
+    <select id="selectCategory" resultType="BizVO">
+        SELECT  cc.commonCodeName AS catCommon, biz.*
+        FROM    t_whizlab_biz AS biz
+            LEFT OUTER JOIN t_whizlab_commoncode AS cc
+                ON biz.bizCategory = cc.commonCodeNumber
+        WHERE   biz.bizDel = 'N'
+        <if test="selector > 0">
+            AND     biz.bizCategory = #{selector}
+        </if>
+    </select>
+
+    <select id="searchTable" resultType="BizVO">
+        SELECT  cc.commonCodeName AS catCommon, biz.*
+        FROM    t_whizlab_biz AS biz
+                LEFT OUTER JOIN t_whizlab_commoncode AS cc
+                    ON biz.bizCategory = cc.commonCodeNumber
+        WHERE   biz.bizDel = 'N'
+        <if test="selector > 0">
+            AND     biz.bizCategory = #{selector}
+        </if>
+        <include refid="search"/>
+    </select>
+</mapper>

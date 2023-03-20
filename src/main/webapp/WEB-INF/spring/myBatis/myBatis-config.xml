@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-config.dtd">
+ <configuration>
+ 
+	<settings>
+        <!-- http://www.mybatis.org/mybatis-3/ko/configuration.html -->
+        <setting name="cacheEnabled" value="true"/>
+        <setting name="lazyLoadingEnabled" value="false"/>
+        <setting name="multipleResultSetsEnabled" value="true"/>
+        <setting name="useColumnLabel" value="true"/>
+        <setting name="useGeneratedKeys" value="false"/>
+        <setting name="defaultExecutorType" value="SIMPLE"/>
+        <setting name="defaultStatementTimeout" value="25000"/>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="jdbcTypeForNull" value="VARCHAR"/>
+        <!-- <setting name="callSettersOnNulls" value="true" /> -->
+    </settings>
+
+ 	<typeAliases>
+        <typeAlias type="com.whizlab.first.vo.BizVO" alias="BizVO"/>
+        <typeAlias type="com.whizlab.first.vo.MenuVO" alias="MenuVO"/>
+        <typeAlias type="com.whizlab.first.vo.UserVO" alias="UserVO"/>
+        <typeAlias type="com.whizlab.first.vo.BrandVO" alias="BrandVO"/>
+        <typeAlias type="com.whizlab.first.vo.GroupVO" alias="GroupVO"/>
+        <typeAlias type="com.whizlab.first.vo.ScreenVO" alias="ScreenVO"/>
+        <typeAlias type="com.whizlab.first.vo.CenterVO" alias="CenterVO"/>
+        <typeAlias type="com.whizlab.first.vo.CourierVO" alias="CourierVO"/>
+        <typeAlias type="com.whizlab.first.vo.ProductVO" alias="ProductVO"/>
+        <typeAlias type="com.whizlab.first.vo.CustomerVO" alias="CustomerVO"/>
+        <typeAlias type="com.whizlab.first.vo.CommonMaxVO" alias="CommonMaxVO"/>
+        <typeAlias type="com.whizlab.first.vo.FreeboardVO" alias="FreeboardVO"/>
+        <typeAlias type="com.whizlab.first.vo.ThumbnailVO" alias="ThumbnailVO"/>
+        <typeAlias type="com.whizlab.first.vo.UserGroupVO" alias="UserGroupVO"/>
+        <typeAlias type="com.whizlab.first.vo.CommonCodeVO" alias="CommonCodeVO"/>
+        <typeAlias type="com.whizlab.first.vo.MainCommonVO" alias="MainCommonVO"/>
+        <typeAlias type="com.whizlab.first.vo.GroupScreenVO" alias="GroupScreenVO"/>
+        <typeAlias type="com.whizlab.first.vo.NoticeVO" alias="NoticeVO"/>
+        <typeAlias type="com.whizlab.first.vo.ClaimVO" alias="ClaimVO"/>
+
+        <!--        <typeAlias type="java.lang.String" alias="String"/>-->
+<!--        <typeAlias type="java.util.Map" alias="Map"/>-->
+<!--        <typeAlias type="java.util.List" alias="List"/>-->
+<!--        <typeAlias type="java.util.Arrays" alias="Array"/>-->
+<!-- 		<typeAlias type="java.util.ArrayList" alias="ArrayList"/>-->
+ 	</typeAliases>
+ 	
+ 	<mappers>
+        <mapper resource="first/SQLMap/mapper/Biz_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/User_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/Auth_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/Menu_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/Group_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/Brand_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/Common_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/Center_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/Courier_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/Product_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/Customer_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/FreeBoard_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/Thumbnail_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/Notice_SQL.xml" />
+        <mapper resource="first/SQLMap/mapper/Claim_SQL.xml" />
+ 	</mappers>
+ </configuration>

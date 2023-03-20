@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.tnb">
+    <sql id="search">
+        <if test="condition == 'title'">
+            AND tnb.tnbTitle LIKE CONCAT('%',#{keyword},'%')
+        </if>
+        <if test="condition == 'content'">
+            AND tnb.tnbContent LIKE CONCAT('%',#{keyword},'%')
+        </if>
+        <if test="condition == 'writer'">
+            AND tnb.tnbRegister LIKE CONCAT('%',#{keyword},'%')
+        </if>
+    </sql>
+
+    <select id="getTotal" resultType="int">
+        SELECT  COUNT(*)
+        FROM    t_whizlab_thumbnail tnb
+        WHERE 	tnb.tnbDel = 'N'
+        <include refid="search"/>
+    </select>
+
+    <select id="tnbList" resultType="ThumbnailVO">
+        SELECT  tnb.tnbSeq, tnb.tnbTitle, tnb.tnbContent, tnb.tnbImageName, tnb.tnbImagePath,
+                usr.userID AS tnbEdit, us.userID AS tnbRegister
+        FROM	t_whizlab_thumbnail AS tnb
+            LEFT OUTER JOIN t_whizlab_user AS usr
+                ON tnb.tnbEditor = usr.userSeq
+            LEFT OUTER JOIN t_whizlab_user AS us
+                ON tnb.tnbRegi = us.userSeq
+        WHERE   tnb.tnbDel = 'Y'
+        <include refid="search"/>
+        ORDER BY tnbSeq DESC
+        limit  #{pageNum} , #{countPerPage}
+    </select>
+
+    <select id="tnbViewList" resultType="ThumbnailVO">
+        SELECT 	*
+        FROM 	t_whizlab_thumbnail
+        WHERE 	tnbSeq = #{tnbSeq}
+    </select>
+
+    <insert id="tnbInsert">
+        INSERT INTO t_whizlab_thumbnail (tnbTitle, tnbContent, tnbImageName, tnbImagePath, tnbRegi, tnbEditor, tnbDel)
+        VALUES (#{tnbTitle}, #{tnbContent}, #{tnbImageName}, #{tnbImagePath}, #{tnbRegi}, #{tnbEditor}, 'N')
+    </insert>
+
+    <update id="tnbUpdate">
+        UPDATE 	t_whizlab_thumbnail
+        SET		tnbTitle = #{tnbTitle},
+                tnbContent = #{tnbContent},
+                tnbImageName = #{tnbImageName},
+                tnbImagePath = #{tnbImagePath},
+                tnbEditor = #{tnbEditor}
+        WHERE	tnbSeq = #{tnbSeq}
+    </update>
+
+    <update id="tnbDel">
+        UPDATE 	t_whizlab_thumbnail
+        SET		tnbDel = 'Y'
+        WHERE	tnbSeq = #{tnbSeq}
+    </update>
+</mapper>

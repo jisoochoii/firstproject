@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.auth">
+    <select id="authGroup" resultType="GroupVO">
+        SELECT  groupSeq, groupName
+        FROM    t_whizlab_group
+        WHERE   groupUsage = 'Y'
+    </select>
+
+    <select id="inAuthGroup" resultType="GroupScreenVO">
+        SELECT sg.sgSeq, grp.groupSeq, scr.screenSeq, grp.groupName, scr.screenName, scr.screenPath, sg.sgAuth
+        FROM t_whizlab_screengroup AS sg
+             LEFT OUTER JOIN t_whizlab_group AS grp
+                 ON sg.sgGroupSeq = grp.groupSeq
+             LEFT OUTER JOIN t_whizlab_screen AS scr
+                 ON sg.sgScreenSeq = scr.screenSeq
+        WHERE   sg.sgGroupSeq = #{groupSeq}
+        AND     scr.screenUsage = 'Y'
+    </select>
+
+    <select id="notAuthGroup" resultType="ScreenVO">
+        SELECT sc.screenSeq, sc.screenName
+        FROM t_whizlab_screen AS sc
+            LEFT OUTER JOIN t_whizlab_screengroup AS sg
+                ON sc.screenSeq = sg.sgScreenSeq
+                    AND IFNULL(sg.sgGroupSeq,0) = #{groupSeq}
+        WHERE IFNULL(sg.sgScreenSeq, 0) = 0
+    </select>
+
+    <insert id="insertScreenGroup">
+        INSERT INTO t_whizlab_screengroup (sgGroupSeq, sgScreenSeq, sgRegi, sgEditor)
+        VALUES
+            <foreach collection="list" item="item" separator=",">
+            (#{item.sgGroupSeq},#{item.sgScreenSeq}, #{item.sgRegi}, #{item.sgEditor})
+            </foreach>
+    </insert>
+
+    <delete id="deleteScreenGroup">
+        DELETE FROM t_whizlab_screengroup
+        WHERE sgSeq
+        IN (
+            <foreach collection="list" item="item" separator=",">
+                #{item.sgSeq}
+            </foreach>
+        )
+    </delete>
+</mapper>

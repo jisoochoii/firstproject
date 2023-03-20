@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.brand">
+    <select id="brandList" resultType="BrandVO">
+        SELECT  cc.commonCodeName, bra.* FROM t_whizlab_brand AS bra
+            LEFT OUTER JOIN t_whizlab_biz AS biz
+                ON bra.brandBizCode = biz.bizCode
+            LEFT OUTER JOIN t_whizlab_commoncode AS cc
+                ON bra.brandCategory = cc.commonCodeNumber
+        WHERE   bra.brandBizCode = #{bizCode}
+        AND     bra.brandUsage = 'Y'
+   </select>
+</mapper>

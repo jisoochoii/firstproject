@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.fb">
+	<select id="fbList" resultType="FreeboardVO">
+		SELECT 	fb.fbSeq, fb.fbTitle, fb.fbContent, usr.userID AS fbEdit, us.userID AS fbRegister
+		FROM	t_whizlab_notice AS fb
+			LEFT OUTER JOIN t_whizlab_user AS usr
+				ON fb.fbEditor = usr.userSeq
+			LEFT OUTER JOIN t_whizlab_user AS us
+				ON fb.fbRegi = us.userSeq
+		WHERE 	fb.fbDel = 'N'
+	</select>
+
+	<select id="fbViewList" resultType="FreeboardVO">
+		SELECT 	*
+		FROM 	t_whizlab_notice
+		WHERE 	fbSeq = #{fbSeq}
+	</select>
+
+	<insert id="fbInsert">
+		INSERT INTO t_whizlab_notice (fbTitle, fbContent, fbRegi, fbEditor, fbDel)
+		VALUES (#{fbTitle}, #{fbContent}, #{fbRegi}, #{fbEditor}, 'N')
+	</insert>
+
+	<update id="fbUpdate">
+		UPDATE 	t_whizlab_notice
+		SET		fbTitle = #{fbTitle},
+				fbContent = #{fbContent},
+				fbEditor = #{fbEditor}
+		WHERE	fbSeq = #{fbSeq}
+	</update>
+
+	<update id="fbDel">
+		UPDATE 	t_whizlab_notice
+		SET		fbDel = 'Y'
+		WHERE	fbSeq = #{fbSeq}
+	</update>
+</mapper>

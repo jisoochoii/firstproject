@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.common">
+    <select id="mainCodeList" resultType="MainCommonVO">
+        SELECT  *
+        FROM    t_whizlab_main_commoncode
+        WHERE   mcCommonCodeUsage = 'Y'
+        AND     mcCommonCodeSeq > 9
+    </select>
+
+    <select id="commonCodeList" resultType="CommonCodeVO">
+        SELECT  *
+        FROM t_whizlab_commoncode AS cc
+            LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = #{commonCodeType}
+        AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <insert id="mainCodeInsert">
+        INSERT INTO t_whizlab_main_commoncode (mcCommonCodeName, mcCommonCodeRegi, mcCommonCodeEditor)
+        VALUES (#{mcCommonCodeName}, #{mcCommonCodeRegi}, #{mcCommonCodeEditor})
+    </insert>
+
+    <insert id="commonCodeInsert">
+        INSERT INTO t_whizlab_commoncode (
+                commonCodeType    ,
+                commonCodeNumber  ,
+                commonCodeName    ,
+                commonCodeValue   ,
+                commonCodeOrder   ,
+                commonCodeRegi    ,
+                commonCodeEditor
+        ) VALUES (
+                #{commonCodeType   } ,
+                #{commonCodeNumber } ,
+                #{commonCodeName   } ,
+                #{commonCodeValue  } ,
+                #{commonCodeOrder  } ,
+                #{commonCodeRegi   } ,
+                #{commonCodeEditor }
+        )
+    </insert>
+
+    <update id="mainCodeDelete">
+        UPDATE  t_whizlab_main_commoncode
+        SET     mcCommonCodeUsage = 'N',
+                mcCommonCodeEditor = #{mcCommonCodeEditor}
+        WHERE   mcCommonCodeSeq = #{mcCommonCodeSeq}
+    </update>
+
+    <update id="commonCodeDelete">
+        UPDATE  t_whizlab_commoncode
+        SET     commonCodeUsage = 'N',
+                commonCodeEditor = #{commonCodeEditor}
+        WHERE   commonCodeSeq = #{commonCodeSeq}
+    </update>
+
+    <select id="commonCodeEmail" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+            LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 11
+        AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeBank" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+            LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 12
+        AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeRegion" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+            LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 13
+        AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeCategory" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+            LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType IN (1,2)
+        AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeCustomerCategory" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+            LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType IN (8,9)
+        AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeUsage" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+            LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 10
+        AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodePayment" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+            LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 16
+        AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodePayMethod" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+            LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 17
+        AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeGuarantee" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+            LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 18
+        AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeSaleUnit" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+            LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 19
+        AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeDiscount" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+            LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 21
+        AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeProductArea" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+                    LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                                    ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 22
+          AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeProductClassified" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+                    LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                                    ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 23
+          AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeProductWeb" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+                    LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                                    ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 24
+          AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeProductPicking" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+                    LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                                    ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 25
+          AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeProductTax" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+                    LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                                    ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 26
+          AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeProductStock" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+                    LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                                    ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 27
+          AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeProductOrigin" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+                    LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                                    ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 28
+          AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeProductDeliveryDate" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+                    LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                                    ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 29
+          AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeProductBasicUnit" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+                    LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                                    ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 30
+          AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeProductItem" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+                    LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                                    ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 31
+          AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonCodeProductManage" resultType="CommonCodeVO">
+        SELECT  cc.commonCodeType, cc.commonCodeNumber, cc.commonCodeName, cc.commonCodeValue
+        FROM    t_whizlab_commoncode AS cc
+                    LEFT OUTER JOIN t_whizlab_main_commoncode AS mc
+                                    ON mc.mcCommonCodeSeq = cc.commonCodeType
+        WHERE   cc.commonCodeType = 32
+          AND	    cc.commonCodeUsage = 'Y'
+    </select>
+
+    <select id="commonMaxNum" resultType="int">
+        SELECT  cmnCommonTypeMaxNum
+        FROM    t_whizlab_common_max_num
+        WHERE   cmnType = 'C'
+        AND     cmnMainCode = #{commonCodeType}
+    </select>
+</mapper>

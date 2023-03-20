@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.customer">
+    <sql id="searchSide">
+        <if test="bizName != ''">
+            AND biz.bizName LIKE CONCAT('%',#{bizName},'%')
+        </if>
+        <if test="brandName != ''">
+            AND bra.brandName LIKE CONCAT('%',#{brandName},'%')
+        </if>
+        <if test="customerName != ''">
+            AND cust.customerName LIKE CONCAT('%',#{customerName},'%')
+        </if>
+    </sql>
+
+    <sql id="Selected">
+        <if test="selectUse != 0">
+            AND cust.customerUsage = #{selectUse}
+        </if>
+        <if test="selectCat != 0">
+            AND biz.bizCategory = #{selectCat}
+        </if>
+        <if test="selectBizArea != 0">
+            AND cust.customerBizArea = #{selectBizArea}
+        </if>
+    </sql>
+
+
+    <!--  사이드바 검색어 검색  -->
+    <select id="searchSidebar" resultType="CustomerVO">
+        SELECT  biz.bizName, bra.brandName, com.commonCodeName AS bizAreaName, cust.*
+        FROM    t_whizlab_customer AS cust
+            LEFT OUTER JOIN t_whizlab_biz AS biz
+                ON cust.customerBizCode = biz.bizCode
+            LEFT OUTER JOIN t_whizlab_brand AS bra
+                ON cust.customerBrandCode = bra.brandCode
+            LEFT OUTER JOIN t_whizlab_commoncode AS com
+                ON cust.customerBizArea = com.commonCodeType
+        WHERE   cust.customerDel = 'N'
+        <include refid="searchSide"/>
+        <include refid="Selected"/>
+    </select>
+
+    <!--  사용구분 select 검색  -->
+    <select id="usageSelect" resultType="CustomerVO">
+        SELECT  biz.bizName, bra.brandName, cust.*
+        FROM    t_whizlab_customer AS cust
+            LEFT OUTER JOIN t_whizlab_biz AS biz
+                ON cust.customerBizCode = biz.bizCode
+            LEFT OUTER JOIN t_whizlab_brand AS bra
+                ON cust.customerBrandCode = bra.brandCode
+        WHERE   cust.customerDel = 'N'
+        AND     cust.customerUsage = 10001
+    </select>
+
+    <!--  센터 리스트  -->
+    <select id="centerList" resultType="CenterVO">
+        SELECT  *
+        FROM    t_whizlab_center
+        WHERE   centerDel = 'N'
+    </select>
+
+    <!--  사업자 내용 가지고 오기  -->
+    <select id="bizList" resultType="BizVO">
+        SELECT  bizCode, bizName
+        FROM    t_whizlab_biz
+        WHERE   bizDel = 'N'
+    </select>
+
+    <select id="brandList" resultType="BrandVO">
+        SELECT  brandCode, brandName
+        FROM    t_whizlab_brand
+        WHERE   brandUsage = 'Y'
+    </select>
+
+    <!--  거래처 리스트  -->
+    <select id="customerList" resultType="CustomerVO">
+        SELECT  biz.bizName, bra.brandName, co.commonCodeName AS bizAreaName, cust.*
+        FROM    t_whizlab_customer AS cust
+            LEFT OUTER JOIN t_whizlab_biz AS biz
+                ON cust.customerBizCode = biz.bizCode
+            LEFT OUTER JOIN t_whizlab_brand AS bra
+                ON cust.customerBrandCode = bra.brandCode
+            LEFT OUTER JOIN t_whizlab_commoncode AS co
+                ON cust.customerBizArea = co.commonCodeNumber
+        WHERE   cust.customerDel = 'N'
+    </select>
+
+    <!--  거래처 한개  -->
+    <select id="customerView" resultType="CustomerVO">
+        SELECT  cent.centerName, co.courierName, co.courierMobile, bra.brandEndTime, cust.*
+        FROM    t_whizlab_customer AS cust
+            LEFT OUTER JOIN t_whizlab_center AS cent
+                ON cent.centerCode = cust.customerCenterCode
+            LEFT OUTER JOIN t_whizlab_courier AS co
+                ON co.courierSeq = cust.customerDeliveryManager
+            LEFT OUTER JOIN t_whizlab_brand AS bra
+                ON bra.brandCode = cust.customerBrandCode
+        WHERE   cust.customerDel = 'N'
+        AND     cent.centerDel = 'N'
+        AND     cust.customerSeq = #{customerSeq}
+    </select>
+
+    <!--  매입처/매출처 Select  -->
+    <select id="selectBuyer" resultType="BizVO">
+        SELECT  bizCode, bizName
+        FROM    t_whizlab_biz
+        WHERE   bizCategory = 2
+        AND		bizDel = 'N'
+    </select>
+
+    <select id="selectSeller" resultType="BizVO">
+        SELECT  bizCode, bizName
+        FROM    t_whizlab_biz
+        WHERE   bizCategory IN (1,2)
+        AND		bizDel = 'N'
+    </select>
+    <!--  매입처/매출처 Select  -->
+
+    <!--  브랜드 Select  -->
+    <select id="selectBrand" resultType="BrandVO">
+        SELECT  brandCode, brandName, brandEndTime
+        FROM    t_whizlab_brand
+        WHERE   brandBizCode = #{bizCode}
+        AND     brandUsage = 'Y'
+    </select>
+
+    <!--  센터 Select  -->
+    <select id="selectCenter" resultType="CenterVO">
+        SELECT  centerCode, centerName
+        FROM    t_whizlab_center
+        WHERE   centerBizCode = #{bizCode}
+        AND     centerDel = 'N'
+    </select>
+
+    <!--  마감시간 가지고 오기  -->
+    <select id="getEndTime" resultType="int">
+        SELECT  brandEndTime
+        FROM    t_whizlab_brand
+        WHERE   brandCode = #{brandCode}
+        AND     brandUsage = 'Y'
+    </select>
+
+    <!--  센터 검색  -->
+    <select id="searchCenter" resultType="CourierVO">
+        SELECT co.courierSeq, ifnull(co.courierName, "없음") AS courierName, co.courierMobile, cent.centerName, cent.centerCode
+        FROM t_whizlab_center AS cent
+            LEFT OUTER JOIN t_whizlab_courier AS co
+                ON co.courierCenter = cent.centerCode
+        WHERE   co.courierDel = 'N'
+        AND	    cent.centerDel = 'N'
+        <if test="selector > 0">
+        AND	    cent.centerCode = #{selector}
+        </if>
+    </select>
+
+    <select id="searchTable" resultType="CourierVO">
+        SELECT co.courierSeq, ifnull(co.courierName, "없음") AS courierName, co.courierMobile, cent.centerName, cent.centerCode
+        FROM t_whizlab_center AS cent
+        LEFT OUTER JOIN t_whizlab_courier AS co
+        ON co.courierCenter = cent.centerCode
+        WHERE   co.courierDel = 'N'
+        AND	    cent.centerDel = 'N'
+        <if test="selector > 0">
+            AND	    cent.centerCode = #{selector}
+        </if>
+        AND  cent.centerName   LIKE CONCAT('%',#{search},'%')
+    </select>
+    <!--  센터 검색  -->
+
+    <insert id="insertCustomer">
+        INSERT INTO t_whizlab_customer(
+            customerBizArea             ,
+            customerBizCode             ,
+            customerBrandCode           ,
+            customerCode                ,
+            customerName                ,
+            customerCenterCode          ,
+            customerBizNumber           ,
+            customerBizCEO              ,
+            customerJuMinNumber         ,
+            customerBizType             ,
+            customerBizItem             ,
+            customerSName               ,
+            customerPayCategory         ,
+            customerPayMethod           ,
+            customerPhone               ,
+            customerMobile              ,
+            customerFAX                 ,
+            customerEmail               ,
+            customerEmailDetail         ,
+            customerBank                ,
+            customerBankAccount         ,
+            customerBankNominee         ,
+            customerVirtualBank         ,
+            customerVirtualBankAccount  ,
+            customerVirtualBankNominee  ,
+            customerVirtualBankDeposit  ,
+            customerWebID               ,
+            customerWebPW               ,
+            customerPostCode            ,
+            customerAddress             ,
+            customerAddressDetail       ,
+            customerGuaranteeNumber     ,
+            customerGuaranteeType       ,
+            customerGuaranteeAmount     ,
+            customerGuaranteeStartDate  ,
+            customerGuaranteeEndDate    ,
+            customerGuaranteeBondLimit  ,
+            customerGuaranteeBondAmount ,
+            customerSaleUnit            ,
+            customerUsage               ,
+            customerNote                ,
+            customerManager             ,
+            customerManagerPhone        ,
+            customerManagerMobile       ,
+            customerManagerEmail        ,
+            customerManagerEmailDetail  ,
+            customerDeliveryManager     ,
+            customerStockCome           ,
+            customerRegi                ,
+            customerEditor              ,
+            customerDealStartDate       ,
+            customerDealEndDate         ,
+            customerDeliveryMon         ,
+            customerDeliveryTue         ,
+            customerDeliveryWed         ,
+            customerDeliveryThu         ,
+            customerDeliveryFri         ,
+            customerDeliverySat         ,
+            customerDeliverySun         ,
+            customerDeliveryEvery       ,
+            customerDeliveryEOD         ,
+            customerAutoOrder
+        ) VALUES (
+             #{customerBizArea             },
+             #{customerBizCode             },
+             #{customerBrandCode           },
+             #{customerCode                },
+             #{customerName                },
+             #{customerCenterCode          },
+             #{customerBizNumber           },
+             #{customerBizCEO              },
+             #{customerJuMinNumber         },
+             #{customerBizType             },
+             #{customerBizItem             },
+             #{customerSName               },
+             #{customerPayCategory         },
+             #{customerPayMethod           },
+             #{customerPhone               },
+             #{customerMobile              },
+             #{customerFAX                 },
+             #{customerEmail               },
+             #{customerEmailDetail         },
+             #{customerBank                },
+             #{customerBankAccount         },
+             #{customerBankNominee         },
+             #{customerVirtualBank         },
+             #{customerVirtualBankAccount  },
+             #{customerVirtualBankNominee  },
+             #{customerVirtualBankDeposit  },
+             #{customerWebID               },
+             #{customerWebPW               },
+             #{customerPostCode            },
+             #{customerAddress             },
+             #{customerAddressDetail       },
+             #{customerGuaranteeNumber     },
+             #{customerGuaranteeType       },
+             #{customerGuaranteeAmount     },
+             #{customerGuaranteeStartDate  },
+             #{customerGuaranteeEndDate    },
+             #{customerGuaranteeBondLimit  },
+             #{customerGuaranteeBondAmount },
+             #{customerSaleUnit            },
+             #{customerUsage               },
+             #{customerNote                },
+             #{customerManager             },
+             #{customerManagerPhone        },
+             #{customerManagerMobile       },
+             #{customerManagerEmail        },
+             #{customerManagerEmailDetail  },
+             #{customerDeliveryManager     },
+             #{customerStockCome           },
+             #{customerRegi                },
+             #{customerEditor              },
+             #{customerDealStartDate       },
+             #{customerDealEndDate         },
+             #{customerDeliveryMon         },
+             #{customerDeliveryTue         },
+             #{customerDeliveryWed         },
+             #{customerDeliveryThu         },
+             #{customerDeliveryFri         },
+             #{customerDeliverySat         },
+             #{customerDeliverySun         },
+             #{customerDeliveryEvery       },
+             #{customerDeliveryEOD         },
+             #{customerAutoOrder           }
+        )
+    </insert>
+
+    <update id="updateCustomer">
+        UPDATE  t_whizlab_customer
+        SET     customerBizArea              = #{customerBizArea            },
+                customerBizCode              = #{customerBizCode            },
+                customerBrandCode            = #{customerBrandCode          },
+                customerCode                 = #{customerCode               },
+                customerName                 = #{customerName               },
+                customerCenterCode           = #{customerCenterCode         },
+                customerBizNumber            = #{customerBizNumber          },
+                customerBizCEO               = #{customerBizCEO             },
+                customerJuMinNumber          = #{customerJuMinNumber        },
+                customerBizType              = #{customerBizType            },
+                customerBizItem              = #{customerBizItem            },
+                customerSName                = #{customerSName              },
+                customerPayCategory          = #{customerPayCategory        },
+                customerPayMethod            = #{customerPayMethod          },
+                customerPhone                = #{customerPhone              },
+                customerMobile               = #{customerMobile             },
+                customerFAX                  = #{customerFAX                },
+                customerEmail                = #{customerEmail              },
+                customerEmailDetail          = #{customerEmailDetail        },
+                customerBank                 = #{customerBank               },
+                customerBankAccount          = #{customerBankAccount        },
+                customerBankNominee          = #{customerBankNominee        },
+                customerVirtualBank          = #{customerVirtualBank        },
+                customerVirtualBankAccount   = #{customerVirtualBankAccount },
+                customerVirtualBankNominee   = #{customerVirtualBankNominee },
+                customerVirtualBankDeposit   = #{customerVirtualBankDeposit },
+                customerWebID                = #{customerWebID              },
+                customerWebPW                = #{customerWebPW              },
+                customerPostCode             = #{customerPostCode           },
+                customerAddress              = #{customerAddress            },
+                customerAddressDetail        = #{customerAddressDetail      },
+                customerGuaranteeNumber      = #{customerGuaranteeNumber    },
+                customerGuaranteeType        = #{customerGuaranteeType      },
+                customerGuaranteeAmount      = #{customerGuaranteeAmount    },
+                customerGuaranteeStartDate   = #{customerGuaranteeStartDate },
+                customerGuaranteeEndDate     = #{customerGuaranteeEndDate   },
+                customerGuaranteeBondLimit   = #{customerGuaranteeBondLimit },
+                customerGuaranteeBondAmount  = #{customerGuaranteeBondAmount},
+                customerSaleUnit             = #{customerSaleUnit           },
+                customerUsage                = #{customerUsage              },
+                customerNote                 = #{customerNote               },
+                customerManager              = #{customerManager            },
+                customerManagerPhone         = #{customerManagerPhone       },
+                customerManagerMobile        = #{customerManagerMobile      },
+                customerManagerEmail         = #{customerManagerEmail       },
+                customerManagerEmailDetail   = #{customerManagerEmailDetail },
+                customerDeliveryManager      = #{customerDeliveryManager    },
+                customerStockCome            = #{customerStockCome          },
+                customerDeliveryMon          = #{customerDeliveryMon        },
+                customerDeliveryTue          = #{customerDeliveryTue        },
+                customerDeliveryWed          = #{customerDeliveryWed        },
+                customerDeliveryThu          = #{customerDeliveryThu        },
+                customerDeliveryFri          = #{customerDeliveryFri        },
+                customerDeliverySat          = #{customerDeliverySat        },
+                customerDeliverySun          = #{customerDeliverySun        },
+                customerDeliveryEvery        = #{customerDeliveryEvery      },
+                customerDeliveryEOD          = #{customerDeliveryEOD        },
+                customerAutoOrder            = #{customerAutoOrder          },
+                customerEditor               = #{customerEditor             }
+        WHERE   customerSeq                  = #{customerSeq}
+    </update>
+
+    <update id="deleteCustomer">
+        UPDATE  t_whizlab_customer
+        SET     customerDel     = 'Y',
+                customerEditor  = #{customerEditor}
+        WHERE   customerSeq     = #{customerSeq}
+    </update>
+
+    <select id="getCustomerMaxNum" resultType="int">
+        SELECT  CONCAT(cmnMainCode, LPAD(cmnCommonTypeMaxNum, 4,'0'))
+        FROM    t_whizlab_common_max_num
+        WHERE   cmnType = 'BIZ'
+        AND     cmnMainCode = #{customerBizCode}
+    </select>
+
+    <select id="customerLogin" resultType="CustomerVO">
+        SELECT  *
+        FROM    t_whizlab_customer
+        WHERE   customerWebID = #{customerWebID}
+    </select>
+
+</mapper>

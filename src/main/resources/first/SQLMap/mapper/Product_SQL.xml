@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whizlab.product">
+    <sql id="searchNames">
+        <if test="searchBizName != ''">
+            AND biz.bizName LIKE CONCAT('%',#{bizName},'%')
+        </if>
+        <if test="searchProduct != ''">
+            AND prod.prodName LIKE CONCAT('%',#{prodName},'%')
+        </if>
+    </sql>
+
+    <sql id="searchProductSelectors">
+        <if test="categorySelect != 0">
+            AND prod.prodBizArea = #{categorySelect}
+        </if>
+        <if test="usageSelect != 0">
+            AND prod.prodUsage = #{usageSelect}
+        </if>
+        <if test="productAreaSelect != 0">
+            AND prod.prodArea = #{productAreaSelect}
+        </if>
+        <if test="prodItemSelect != 0">
+            AND prod.prodItem = #{prodItemSelect}
+        </if>
+    </sql>
+
+    <select id="bizList" resultType="BizVO">
+        SELECT  *
+        FROM    t_whizlab_biz
+        WHERE   bizDel = 'N'
+    </select>
+
+    <select id="customerList" resultType="CustomerVO">
+        SELECT  *
+        FROM    t_whizlab_customer
+        WHERE   customerDel = 'N'
+    </select>
+
+    <select id="productList" resultType="ProductVO">
+        SELECT	biz.bizName, prod.prodName, prod.prodSeq
+        FROM	t_whizlab_product AS prod
+            LEFT OUTER JOIN t_whizlab_biz AS biz
+                ON  biz.bizCode = prod.prodBizCode
+        WHERE	prod.prodDel = 'N'
+    </select>
+
+    <select id="productView" resultType="ProductVO">
+        SELECT	*
+        FROM	t_whizlab_product
+        WHERE	prodDel = 'N'
+        AND     prodSeq = #{prodSeq}
+    </select>
+
+    <select id="searchProduct" resultType="ProductVO">
+        SELECT	biz.bizName, prod.*
+        FROM	t_whizlab_product AS prod
+            LEFT OUTER JOIN t_whizlab_biz AS biz
+                ON  biz.bizCode = prod.prodBizCode
+        WHERE	prod.prodDel = 'N'
+        <include refid="searchNames"/>
+        <include refid="searchProductSelectors"/>
+    </select>
+
+    <insert id="insertProduct">
+        INSERT INTO t_whizlab_product (
+            prodBizArea,
+            prodBizCode,
+            prodCustomerCode,
+            prodCode,
+            prodName,
+            prodDealStartDate,
+            prodDealEndDate,
+            prodArea,
+            prodItem,
+            prodClassified,
+            prodWebArea,
+            prodPicking,
+            prodBasicUnit,
+            prodTax,
+            prodBoxAmount,
+            prodMinAmount,
+            prodDelivery,
+            prodManageCode,
+            prodSName,
+            prodExpiration,
+            prodLocation,
+            prodBarcode,
+            prodStock,
+            prodStockAmount,
+            prodStockDate,
+            prodSetWeb,
+            prodSetProd,
+            prodSetZero,
+            prodManufacturer,
+            prodOriginal,
+            prodStandard,
+            prodBoxWeight,
+            prodNote,
+            prodUsage,
+            prodRegi,
+            prodEditor
+        ) VALUES (
+             #{prodBizArea},
+             #{prodBizCode},
+             #{prodCustomerCode},
+             #{prodCode},
+             #{prodName},
+             #{prodDealStartDate},
+             #{prodDealEndDate},
+             #{prodArea},
+             #{prodItem},
+             #{prodClassified},
+             #{prodWebArea},
+             #{prodPicking},
+             #{prodBasicUnit},
+             #{prodTax},
+             #{prodBoxAmount},
+             #{prodMinAmount},
+             #{prodDelivery},
+             #{prodManageCode},
+             #{prodSName},
+             #{prodExpiration},
+             #{prodLocation},
+             #{prodBarcode},
+             #{prodStock},
+             #{prodStockAmount},
+             #{prodStockDate},
+             #{prodSetWeb},
+             #{prodSetProd},
+             #{prodSetZero},
+             #{prodManufacturer},
+             #{prodOriginal},
+             #{prodStandard},
+             #{prodBoxWeight},
+             #{prodNote},
+             #{prodUsage},
+             #{prodRegi},
+             #{prodEditor}
+        )
+    </insert>
+
+    <update id="updateProduct">
+        UPDATE  t_whizlab_product
+        SET     prodBizArea          = #{prodBizArea},
+                prodBizCode          = #{prodBizCode},
+                prodCustomerCode     = #{prodCustomerCode},
+                prodCode             = #{prodCode},
+                prodName             = #{prodName},
+                prodDealStartDate    = #{prodDealStartDate},
+                prodDealEndDate      = #{prodDealEndDate},
+                prodArea             = #{prodArea},
+                prodItem             = #{prodItem},
+                prodClassified       = #{prodClassified},
+                prodWebArea          = #{prodWebArea},
+                prodPicking          = #{prodPicking},
+                prodBasicUnit        = #{prodBasicUnit},
+                prodTax              = #{prodTax},
+                prodBoxAmount        = #{prodBoxAmount},
+                prodMinAmount        = #{prodMinAmount},
+                prodDelivery         = #{prodDelivery},
+                prodManageCode       = #{prodManageCode},
+                prodSName            = #{prodSName},
+                prodExpiration       = #{prodExpiration},
+                prodLocation         = #{prodLocation},
+                prodBarcode          = #{prodBarcode},
+                prodStock            = #{prodStock},
+                prodStockAmount      = #{prodStockAmount},
+                prodStockDate        = #{prodStockDate},
+                prodSetWeb           = #{prodSetWeb},
+                prodSetProd          = #{prodSetProd},
+                prodSetZero          = #{prodSetZero},
+                prodManufacturer     = #{prodManufacturer},
+                prodOriginal         = #{prodOriginal},
+                prodStandard         = #{prodStandard},
+                prodBoxWeight        = #{prodBoxWeight},
+                prodNote             = #{prodNote},
+                prodUsage            = #{prodUsage},
+                prodEditor           = #{prodEditor}
+        WHERE   prodSeq              = #{prodSeq}
+    </update>
+
+    <update id="deleteProduct">
+        UPDATE 	t_whizlab_product
+        SET		prodDel     = 'Y',
+        		prodEditor  = #{prodEditor}
+        WHERE	prodSeq     = #{prodSeq}
+    </update>
+
+    <select id="optionBizArea" resultType="BizVO">
+        SELECT	bizCode, bizName
+        FROM	t_whizlab_biz
+        WHERE	bizCategory = #{bizCategory}
+    </select>
+
+    <select id="optionBizCode" resultType="CustomerVO">
+        SELECT	customerCode, customerName
+        FROM	t_whizlab_customer
+        WHERE	customerBizCode = #{customerBizCode}
+    </select>
+
+    <select id="getDealDates" resultType="CustomerVO">
+        SELECT	customerDealStartDate, customerDealEndDate
+        FROM	t_whizlab_customer
+        WHERE	customerCode = #{customerCode}
+    </select>
+
+    <select id="getMaxProductCodeNum" resultType="int">
+        SELECT  CONCAT(cmnMainCode, LPAD(cmnCommonTypeMaxNum, 4,'0'))
+        FROM    t_whizlab_common_max_num
+        WHERE   cmnType = 'ITEM'
+        AND     cmnMainCode = #{prodBizCode}
+    </select>
+</mapper>
